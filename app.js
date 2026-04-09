@@ -271,9 +271,9 @@ inputBusca.addEventListener('input', function() {
     } else {
         // Filtra a lista original procurando o termo no Nome, Código ou Telefone
         clientesFiltrados = todosClientes.filter(cli => {
-            const nome = (cli.nome || '').toLowerCase();
-            const codigo = (cli.codigo || '').toLowerCase();
-            const telefone = (cli.telefone || '').toLowerCase();
+            const nome = String(cli.nome || '').toLowerCase();
+            const codigo = String(cli.codigo || '').toLowerCase();
+            const telefone = String(cli.telefone || '').toLowerCase();
             
             return nome.includes(termoDigitado) || codigo.includes(termoDigitado) || telefone.includes(termoDigitado);
         });
