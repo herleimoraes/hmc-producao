@@ -68,3 +68,46 @@ formulario.addEventListener('submit', async function(event) {
         iconEnviar.className = 'fa-solid fa-paper-plane me-2';
     }
 });
+
+// ==========================================
+// NAVEGAÇÃO DO RODAPÉ (SINGLE PAGE APP)
+// ==========================================
+
+// Seleciona todos os botões do rodapé e todas as páginas
+const botoesMenu = document.querySelectorAll('.nav-item');
+const paginas = document.querySelectorAll('.app-pagina');
+
+botoesMenu.forEach(botao => {
+    botao.addEventListener('click', function(event) {
+        event.preventDefault(); // Evita que o link atualize a página
+
+        // 1. Remove a cor azul (active) de todos os botões
+        botoesMenu.forEach(b => b.classList.remove('active'));
+        
+        // 2. Adiciona a cor azul no botão que foi clicado
+        this.classList.add('active');
+
+        // 3. Esconde todas as páginas adicionando a classe d-none (display: none)
+        paginas.forEach(p => p.classList.add('d-none'));
+
+        // 4. Mostra a página correta puxando o nome dela do "data-alvo" do botão clicado
+        const paginaAlvo = this.getAttribute('data-alvo');
+        document.getElementById(paginaAlvo).classList.remove('d-none');
+    });
+});
+
+// ==========================================
+// MODO ESCURO (DARK MODE)
+// ==========================================
+
+const toggleModoEscuro = document.getElementById('toggleModoEscuro');
+
+toggleModoEscuro.addEventListener('change', function() {
+    if (this.checked) {
+        // Se a chave for ligada, avisa o HTML para usar o tema escuro
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+    } else {
+        // Se desligada, volta pro claro
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+    }
+});
