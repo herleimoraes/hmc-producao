@@ -1,0 +1,56 @@
+/* style.css */
+
+/* Ajustes finos para a experiência mobile */
+body {
+    background-color: #f0f2f5; /* Fundo cinza claro padrão de apps */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 450px;
+    padding: 15px;
+}
+
+.card {
+    border-radius: 20px;
+    border: none;
+}
+
+.btn-primary {
+    border-radius: 12px;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Estilização dos inputs para ficarem contínuos com o ícone */
+.input-group-text {
+    background-color: #fff;
+    border-right: none;
+    color: #6c757d;
+}
+
+.form-control {
+    border-left: none;
+    padding-left: 0;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+}
+
+.input-group:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-radius: var(--bs-border-radius);
+}
+
+.input-group:focus-within .input-group-text,
+.input-group:focus-within .form-control {
+    border-color: #86b7fe;
+}
