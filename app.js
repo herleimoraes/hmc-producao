@@ -171,7 +171,8 @@ formNovoCliente.addEventListener('submit', async function(event) {
             alertaCliente.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Cliente ${codigoGerado} salvo!`;
             alertaCliente.classList.add('alert-success');
             alertaCliente.classList.remove('d-none');
-            formNovoCliente.reset(); 
+            formNovoCliente.reset();
+            carregarClientes();
 
             // Fecha o Modal automático
             setTimeout(() => {
