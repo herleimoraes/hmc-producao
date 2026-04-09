@@ -106,6 +106,93 @@ botoesMenu.forEach(botao => {
 });
 
 // ==========================================
+// CADASTRO DE CLIENTES
+// ==========================================
+
+const formNovoCliente = document.getElementById('formNovoCliente');
+const btnSalvarCliente = document.getElementById('btnSalvarCliente');
+const textoBtnCliente = document.getElementById('textoBtnCliente');
+const iconSalvarCliente = document.getElementById('iconSalvarCliente');
+const alertaCliente = document.getElementById('alertaCliente');
+
+// Função que gera um código único tipo "CLI-X8B4"
+function gerarCodigoCliente() {
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let sufixo = '';
+    for (let i = 0; i < 4; i++) {
+        sufixo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return 'CLI-' + sufixo;
+}
+
+formNovoCliente.addEventListener('submit', async function(event) {
+    event.preventDefault(); 
+
+    // Cria os campos automáticos
+    const codigoGerado = gerarCodigoCliente();
+    const dataAtual = new Date().toISOString(); // Formato padrão de banco de dados
+
+    // Coleta todos os dados + a "ação" para o Apps Script saber o que fazer
+    const payload = {
+        acao: "salvar_cliente",
+        dados: {
+            codigo: codigoGerado,
+            dataCadastro: dataAtual,
+            ultimaAtualizacao: dataAtual,
+            nome: document.getElementById('cliNome').value,
+            telefone: document.getElementById('cliTelefone').value,
+            documento: document.getElementById('cliDocumento').value,
+            email: document.getElementById('cliEmail').value,
+            endereco: document.getElementById('cliEndereco').value,
+            observacoes: document.getElementById('cliObs').value
+        }
+    };
+
+    // UX: Botão carregando
+    btnSalvarCliente.disabled = true;
+    textoBtnCliente.innerText = 'Salvando...';
+    iconSalvarCliente.className = 'fa-solid fa-spinner fa-spin me-2'; 
+    alertaCliente.classList.add('d-none');
+    alertaCliente.classList.remove('alert-success', 'alert-danger');
+
+    try {
+        const resposta = await fetch(URL_BACKEND, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+
+        const resultado = await resposta.json();
+
+        if (resposta.ok && resultado.status === 'sucesso') {
+            alertaCliente.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Cliente ${codigoGerado} salvo!`;
+            alertaCliente.classList.add('alert-success');
+            alertaCliente.classList.remove('d-none');
+            formNovoCliente.reset(); 
+
+            // Fecha o Modal automático
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalNovoCliente'));
+                modal.hide();
+                alertaCliente.classList.add('d-none');
+            }, 2000);
+
+        } else {
+            throw new Error(resultado.erro);
+        }
+
+    } catch (erro) {
+        alertaCliente.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> Erro ao salvar.';
+        alertaCliente.classList.add('alert-danger');
+        alertaCliente.classList.remove('d-none');
+    } finally {
+        btnSalvarCliente.disabled = false;
+        textoBtnCliente.innerText = 'Salvar Cliente';
+        iconSalvarCliente.className = 'fa-solid fa-floppy-disk me-2';
+    }
+});
+
+// ==========================================
 // MODO ESCURO (DARK MODE)
 // ==========================================
 
