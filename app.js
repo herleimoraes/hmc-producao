@@ -271,6 +271,7 @@ inputBusca.addEventListener('input', function() {
     } else {
         // Filtra a lista original procurando o termo no Nome, Código ou Telefone
         clientesFiltrados = todosClientes.filter(cli => {
+            // O comando String() é quem garante que o número vire texto
             const nome = String(cli.nome || '').toLowerCase();
             const codigo = String(cli.codigo || '').toLowerCase();
             const telefone = String(cli.telefone || '').toLowerCase();
