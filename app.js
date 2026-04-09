@@ -130,7 +130,9 @@ formNovoCliente.addEventListener('submit', async function(event) {
 
     // Cria os campos automáticos
     const codigoGerado = gerarCodigoCliente();
-    const dataAtual = new Date().toISOString(); // Formato padrão de banco de dados
+    
+    // Pega a data de hoje e já formata para o padrão brasileiro (DD/MM/YYYY)
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
 
     // Coleta todos os dados + a "ação" para o Apps Script saber o que fazer
     const payload = {
