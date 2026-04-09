@@ -39,7 +39,7 @@
         const btnEnviar = document.getElementById('btnEnviar');
 
         // URL do seu Backend (Pode ser um arquivo PHP, Python, ou a URL do Apps Script)
-        const URL_BACKEND = 'https://sua-url-do-backend-aqui.com/api'; 
+        const URL_BACKEND = 'https://script.google.com/macros/s/AKfycbweeQEbjMJsWXhcRJ0yI-wsMCMOU8Q3JlqJ1yFrWRFDGJzcQLehSrAHip09FzL_G2ah/exec'; 
 
         formulario.addEventListener('submit', async function(event) {
             event.preventDefault(); // Evita que a página recarregue
@@ -60,7 +60,7 @@
                 const resposta = await fetch(URL_BACKEND, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'text/plain;charset=utf-8'
                     },
                     body: JSON.stringify(dados)
                 });
