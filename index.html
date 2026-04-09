@@ -6,9 +6,7 @@
     <title>HMC Controle de Produção</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-light">
@@ -16,7 +14,8 @@
     <nav class="navbar fixed-top bg-primary shadow-sm" data-bs-theme="dark">
         <div class="container-fluid d-flex justify-content-center align-items-center position-relative">
             <a class="navbar-brand mb-0 h1 fw-bold fs-5 text-center d-flex align-items-center" href="#">
-                <i class="fa-solid fa-industry me-2"></i> HMC Produção
+                <i class="fa-solid fa-industry me-2"></i> 
+                HMC Produção
             </a>
             <button class="btn btn-link text-white position-absolute end-0 me-2 p-0 text-decoration-none">
                 <i class="fa-regular fa-bell fs-5"></i>
@@ -25,7 +24,6 @@
     </nav>
 
     <main class="container content-area pt-5 pb-5 mt-4 mb-4">
-        
         <div class="row g-3 mt-2">
             <div class="col-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -36,7 +34,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="col-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
                     <div class="card-body text-center p-3">
@@ -45,26 +42,6 @@
                         <small class="text-muted">45 hoje</small>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="mt-4">
-            <h5 class="fw-bold mb-3 text-secondary fs-6">Ações Rápidas</h5>
-            <div class="list-group shadow-sm rounded-4 border-0">
-                <a href="#" class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0 border-bottom">
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-2 me-3">
-                        <i class="fa-solid fa-plus fa-fw"></i>
-                    </div>
-                    <span class="fw-semibold">Nova Ordem de Produção</span>
-                    <i class="fa-solid fa-chevron-right ms-auto text-muted small"></i>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0">
-                    <div class="bg-info bg-opacity-10 text-info rounded-circle p-2 me-3">
-                        <i class="fa-solid fa-boxes-stacked fa-fw"></i>
-                    </div>
-                    <span class="fw-semibold">Consultar Estoque</span>
-                    <i class="fa-solid fa-chevron-right ms-auto text-muted small"></i>
-                </a>
             </div>
         </div>
     </main>
@@ -81,7 +58,7 @@
                 <span class="nav-label">Produção</span>
             </a>
             
-            <a href="#" class="nav-item nav-item-action">
+            <a href="#" class="nav-item nav-item-action" data-bs-toggle="modal" data-bs-target="#modalNovaOrdem">
                 <div class="action-btn bg-primary text-white shadow">
                     <i class="fa-solid fa-plus fs-4"></i>
                 </div>
@@ -99,6 +76,62 @@
             </a>
         </div>
     </nav>
+
+    <div class="modal fade" id="modalNovaOrdem" tabindex="-1" aria-labelledby="modalNovaOrdemLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 rounded-4 shadow">
+                
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalNovaOrdemLabel">
+                        <i class="fa-solid fa-clipboard-list text-primary me-2"></i>Nova Ordem
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="meuFormulario">
+                        
+                        <div class="mb-3">
+                            <label for="cliente" class="form-label text-secondary small fw-semibold">Cliente</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-regular fa-user"></i></span>
+                                <input type="text" class="form-control border-start-0" id="cliente" placeholder="Nome do cliente" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="modeloTenda" class="form-label text-secondary small fw-semibold">Modelo da Tenda</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-campground"></i></span>
+                                <select class="form-select border-start-0" id="modeloTenda" required>
+                                    <option value="" selected disabled>Selecione um modelo...</option>
+                                    <option value="Sanfonada">Tenda Sanfonada</option>
+                                    <option value="Piramidal">Tenda Piramidal</option>
+                                    <option value="Galpão">Galpão Lonado</option>
+                                    <option value="Personalizada">Personalizada / Sob Medida</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="quantidade" class="form-label text-secondary small fw-semibold">Quantidade</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fa-solid fa-hashtag"></i></span>
+                                <input type="number" class="form-control border-start-0" id="quantidade" placeholder="Ex: 2" min="1" required>
+                            </div>
+                        </div>
+
+                        <div id="alertaMensagem" class="alert d-none mb-3 text-center small py-2" role="alert"></div>
+
+                        <button type="submit" id="btnEnviar" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-2" id="iconEnviar"></i> 
+                            <span id="textoBtn">Gerar Ordem de Produção</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
