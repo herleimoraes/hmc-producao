@@ -39,8 +39,30 @@
         </div>
 
         <div id="pagina-clientes" class="app-pagina d-none">
-            <h4 class="fw-bold mb-3 mt-3">Página de Clientes</h4>
-            <p class="text-secondary">Aqui ficará a lista de clientes cadastrados, com opções para editar e excluir.</p>
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                <h4 class="fw-bold mb-0">Clientes</h4>
+                <button class="btn btn-primary shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalNovoCliente">
+                    <i class="fa-solid fa-plus me-1"></i> Novo
+                </button>
+            </div>
+
+            <div class="input-group mb-4 shadow-sm rounded-4 overflow-hidden">
+                <span class="input-group-text bg-white border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" class="form-control border-0 bg-white" placeholder="Buscar por nome ou código..." id="buscaCliente">
+            </div>
+
+            <div id="lista-clientes">
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="fw-bold mb-0 text-truncate pe-2">Prefeitura Municipal</h6>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">CLI-9X2A</span>
+                        </div>
+                        <p class="text-secondary small mb-1"><i class="fa-brands fa-whatsapp me-2"></i>(34) 99999-0000</p>
+                        <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-2"></i>Centro, Uberlândia - MG</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="pagina-pedidos" class="app-pagina d-none">
@@ -98,6 +120,64 @@
             
         </div>
     </nav>
+
+
+    <div class="modal fade" id="modalNovoCliente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 rounded-4 shadow bg-body">
+                
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold">
+                        <i class="fa-solid fa-user-plus text-primary me-2"></i>Novo Cliente
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <form id="formNovoCliente">
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-semibold">Nome Completo / Razão Social *</label>
+                            <input type="text" class="form-control" id="cliNome" required>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-secondary small fw-semibold">WhatsApp / Tel *</label>
+                                <input type="tel" class="form-control" id="cliTelefone" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-secondary small fw-semibold">CPF / CNPJ</label>
+                                <input type="text" class="form-control" id="cliDocumento">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-semibold">E-mail</label>
+                            <input type="email" class="form-control" id="cliEmail">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-semibold">Endereço Base / Cidade</label>
+                            <input type="text" class="form-control" id="cliEndereco">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold">Observações Internas</label>
+                            <textarea class="form-control" id="cliObs" rows="2" placeholder="Ex: Preferência por montagem de manhã..."></textarea>
+                        </div>
+
+                        <div id="alertaCliente" class="alert d-none mb-3 text-center small py-2"></div>
+
+                        <button type="submit" id="btnSalvarCliente" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                            <i class="fa-solid fa-floppy-disk me-2" id="iconSalvarCliente"></i> 
+                            <span id="textoBtnCliente">Salvar Cliente</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="modalNovaOrdem" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
