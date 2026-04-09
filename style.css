@@ -1,56 +1,75 @@
 /* style.css */
 
-/* Ajustes finos para a experiência mobile */
+/* Reset básico para mobile */
 body {
-    background-color: #f0f2f5; /* Fundo cinza claro padrão de apps */
+    -webkit-tap-highlight-color: transparent; /* Remove aquele fundo azul ao clicar em links no celular */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Área de conteúdo - Garante que barra superior e inferior não cubram o conteúdo */
+.content-area {
+    min-height: 100vh;
+}
+
+/* -------------------------------------
+   Estilos do Bottom Navigation (Rodapé)
+---------------------------------------- */
+.bottom-nav {
+    height: 70px;
+    z-index: 1030;
+    padding-bottom: env(safe-area-inset-bottom); /* Suporte para a barra preta dos iPhones novos */
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #6c757d; /* Cor cinza desativada */
+    flex: 1;
+    height: 100%;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-item:hover, .nav-item:active {
+    color: #0d6efd; /* Azul do Bootstrap */
+}
+
+/* Estado ativo (página atual) */
+.nav-item.active {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.nav-icon {
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+}
+
+.nav-label {
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* -------------------------------------
+   Botão Flutuante Central (Action Button)
+---------------------------------------- */
+.nav-item-action {
+    position: relative;
+    top: -15px; /* Sobe o botão central */
+}
+
+.action-btn {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    margin: 0;
+    transition: transform 0.2s;
 }
 
-.form-container {
-    width: 100%;
-    max-width: 450px;
-    padding: 15px;
-}
-
-.card {
-    border-radius: 20px;
-    border: none;
-}
-
-.btn-primary {
-    border-radius: 12px;
-    padding: 14px;
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-/* Estilização dos inputs para ficarem contínuos com o ícone */
-.input-group-text {
-    background-color: #fff;
-    border-right: none;
-    color: #6c757d;
-}
-
-.form-control {
-    border-left: none;
-    padding-left: 0;
-}
-
-.form-control:focus {
-    box-shadow: none;
-    border-color: #dee2e6;
-}
-
-.input-group:focus-within {
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    border-radius: var(--bs-border-radius);
-}
-
-.input-group:focus-within .input-group-text,
-.input-group:focus-within .form-control {
-    border-color: #86b7fe;
+.action-btn:active {
+    transform: scale(0.90); /* Efeito de aperto no clique */
 }
