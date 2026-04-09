@@ -6,59 +6,65 @@ const textoBtn = document.getElementById('textoBtn');
 const iconEnviar = document.getElementById('iconEnviar');
 const alertaMensagem = document.getElementById('alertaMensagem');
 
-// IMPORTANTE: Cole aqui a URL do seu App da Web do Google Apps Script
+// COLE AQUI A SUA URL DO WEB APP
 const URL_BACKEND = 'https://script.google.com/macros/s/AKfycbweeQEbjMJsWXhcRJ0yI-wsMCMOU8Q3JlqJ1yFrWRFDGJzcQLehSrAHip09FzL_G2ah/exec'; 
 
 formulario.addEventListener('submit', async function(event) {
     event.preventDefault(); 
 
-    // Coleta os dados
+    // Coleta os novos dados do Controle de Produção
     const dados = {
-        nome: document.getElementById('nome').value,
-        email: document.getElementById('email').value
+        cliente: document.getElementById('cliente').value,
+        modelo: document.getElementById('modeloTenda').value,
+        quantidade: document.getElementById('quantidade').value
     };
 
-    // UX: Altera o estado do botão para "Carregando"
+    // UX: Botão processando
     btnEnviar.disabled = true;
-    textoBtn.innerText = 'Processando...';
+    textoBtn.innerText = 'Registrando...';
     iconEnviar.className = 'fa-solid fa-spinner fa-spin me-2'; 
-    
-    // Esconde alertas anteriores
     alertaMensagem.classList.add('d-none');
     alertaMensagem.classList.remove('alert-success', 'alert-danger');
 
     try {
-        // Dispara os dados para o Apps Script
         const resposta = await fetch(URL_BACKEND, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'text/plain;charset=utf-8' // Mantemos o macete do CORS
-            },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(dados)
         });
 
         const resultado = await resposta.json();
 
         if (resposta.ok && resultado.status === 'sucesso') {
-            // Feedback de Sucesso
-            alertaMensagem.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i>Registrado com sucesso!';
+            
+            // Exibe mensagem rápida de sucesso
+            alertaMensagem.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Ordem gerada!';
             alertaMensagem.classList.add('alert-success');
             alertaMensagem.classList.remove('d-none');
-            formulario.reset(); // Limpa os campos
+            
+            formulario.reset(); 
+
+            // Fecha o Modal automaticamente após 1 segundo e meio
+            setTimeout(() => {
+                const modalElement = document.getElementById('modalNovaOrdem');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                modalInstance.hide();
+                alertaMensagem.classList.add('d-none'); // Esconde o alerta para a próxima vez
+            }, 1500);
+
         } else {
             throw new Error(resultado.erro || 'Erro ao comunicar com a planilha');
         }
 
     } catch (erro) {
-        // Feedback de Erro
         console.error('Falha:', erro);
-        alertaMensagem.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-2"></i><strong>Erro:</strong> Não foi possível salvar.';
+        alertaMensagem.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> Erro ao salvar.';
         alertaMensagem.classList.add('alert-danger');
         alertaMensagem.classList.remove('d-none');
     } finally {
-        // UX: Restaura o botão ao estado original
+        // Restaura botão
         btnEnviar.disabled = false;
-        textoBtn.innerText = 'Salvar Dados';
+        textoBtn.innerText = 'Gerar Ordem de Produção';
         iconEnviar.className = 'fa-solid fa-paper-plane me-2';
     }
 });
