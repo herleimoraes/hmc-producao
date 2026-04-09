@@ -1,0 +1,21 @@
+{
+  "name": "HMC Controle de Produção",
+  "short_name": "HMC App",
+  "description": "Sistema de controle de ordens de produção",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "icons": [
+    {
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
