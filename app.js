@@ -1,3 +1,12 @@
+// Registra o Service Worker para habilitar a instalação do PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service worker registrado com sucesso.'))
+            .catch(err => console.log('Erro ao registrar service worker:', err));
+    });
+}
+
 // app.js
 
 const formulario = document.getElementById('meuFormulario');
@@ -7,7 +16,7 @@ const iconEnviar = document.getElementById('iconEnviar');
 const alertaMensagem = document.getElementById('alertaMensagem');
 
 // COLE AQUI A SUA URL DO WEB APP
-const URL_BACKEND = 'https://script.google.com/macros/s/AKfycbweeQEbjMJsWXhcRJ0yI-wsMCMOU8Q3JlqJ1yFrWRFDGJzcQLehSrAHip09FzL_G2ah/exec'; 
+const URL_BACKEND = 'https://script.google.com/macros/s/AKfycbweeQEbjMJsWXhcRJ0yI-wsMCMOU8Q3JlqJ1yFrWRFDGJzcQLehSrAHip09FzL_G2ah/exec';
 
 formulario.addEventListener('submit', async function(event) {
     event.preventDefault(); 
