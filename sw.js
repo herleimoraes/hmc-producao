@@ -1,11 +1,13 @@
-// sw.js
 const CACHE_NAME = 'hmc-app-v1';
 
-// Apenas um listener de instalação básico para passar na verificação de PWA
 self.addEventListener('install', (event) => {
     console.log('Service Worker instalado.');
 });
 
+// Agora o fetch tem uma instrução válida: apenas seguir em frente
 self.addEventListener('fetch', (event) => {
-    // Aqui no futuro podemos configurar para o app funcionar sem internet
+    event.respondWith(fetch(event.request).catch(() => {
+        // Se a internet cair, ele não faz nada por enquanto, 
+        // mas o navegador para de reclamar do aviso.
+    }));
 });
