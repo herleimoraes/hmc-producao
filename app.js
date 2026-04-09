@@ -209,3 +209,62 @@ toggleModoEscuro.addEventListener('change', function() {
         document.documentElement.setAttribute('data-bs-theme', 'light');
     }
 });
+
+// ==========================================
+// CARREGAR E LISTAR CLIENTES
+// ==========================================
+
+async function carregarClientes() {
+    const divLista = document.getElementById('lista-clientes');
+    
+    // Mostra o ícone de carregando enquanto busca os dados
+    divLista.innerHTML = `
+        <div class="text-center p-4">
+            <i class="fa-solid fa-spinner fa-spin fa-2x text-primary mb-2"></i>
+            <p class="text-secondary small">Carregando clientes...</p>
+        </div>
+    `;
+
+    try {
+        const resposta = await fetch(URL_BACKEND, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ acao: 'listar_clientes' }) // Manda a nova ação
+        });
+
+        const resultado = await resposta.json();
+
+        if (resposta.ok && resultado.status === 'sucesso') {
+            const clientes = resultado.clientes;
+            divLista.innerHTML = ''; // Limpa o "carregando"
+
+            if (clientes.length === 0) {
+                divLista.innerHTML = '<p class="text-center text-secondary small mt-3">Nenhum cliente cadastrado ainda.</p>';
+                return;
+            }
+
+            // Monta o Card de cada cliente usando os dados da planilha
+            clientes.forEach(cli => {
+                const card = `
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="fw-bold mb-0 text-truncate pe-2">${cli.nome}</h6>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">${cli.codigo}</span>
+                            </div>
+                            <p class="text-secondary small mb-1"><i class="fa-brands fa-whatsapp me-2"></i>${cli.telefone || 'Sem telefone'}</p>
+                            <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-2"></i>${cli.endereco || 'Não informado'}</p>
+                        </div>
+                    </div>
+                `;
+                divLista.innerHTML += card;
+            });
+
+        } else {
+            throw new Error(resultado.erro);
+        }
+    } catch (erro) {
+        console.error('Erro ao carregar clientes:', erro);
+        divLista.innerHTML = '<p class="text-center text-danger small mt-3"><i class="fa-solid fa-triangle-exclamation me-1"></i> Erro ao carregar a lista.</p>';
+    }
+}
