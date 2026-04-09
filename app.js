@@ -213,54 +213,44 @@ toggleModoEscuro.addEventListener('change', function() {
 });
 
 // ==========================================
-// CARREGAR E LISTAR CLIENTES
+// CARREGAR E LISTAR CLIENTES (COM PAGINAÇÃO)
 // ==========================================
+
+let todosClientes = []; // Vai guardar a lista completa
+let paginaAtual = 1;
+const clientesPorPagina = 8; // Limite que você escolheu
 
 async function carregarClientes() {
     const divLista = document.getElementById('lista-clientes');
+    const ulPaginacao = document.getElementById('paginacao-clientes');
     
-    // Mostra o ícone de carregando enquanto busca os dados
     divLista.innerHTML = `
         <div class="text-center p-4">
             <i class="fa-solid fa-spinner fa-spin fa-2x text-primary mb-2"></i>
             <p class="text-secondary small">Carregando clientes...</p>
         </div>
     `;
+    ulPaginacao.innerHTML = ''; // Esconde paginação durante o loading
 
     try {
         const resposta = await fetch(URL_BACKEND, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ acao: 'listar_clientes' }) // Manda a nova ação
+            body: JSON.stringify({ acao: 'listar_clientes' })
         });
 
         const resultado = await resposta.json();
 
         if (resposta.ok && resultado.status === 'sucesso') {
-            const clientes = resultado.clientes;
-            divLista.innerHTML = ''; // Limpa o "carregando"
+            todosClientes = resultado.clientes; // Guarda tudo na memória
+            paginaAtual = 1; // Sempre volta pra página 1 ao recarregar
 
-            if (clientes.length === 0) {
+            if (todosClientes.length === 0) {
                 divLista.innerHTML = '<p class="text-center text-secondary small mt-3">Nenhum cliente cadastrado ainda.</p>';
                 return;
             }
 
-            // Monta o Card de cada cliente usando os dados da planilha
-            clientes.forEach(cli => {
-                const card = `
-                    <div class="card border-0 shadow-sm rounded-4 mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="fw-bold mb-0 text-truncate pe-2">${cli.nome}</h6>
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">${cli.codigo}</span>
-                            </div>
-                            <p class="text-secondary small mb-1"><i class="fa-brands fa-whatsapp me-2"></i>${cli.telefone || 'Sem telefone'}</p>
-                            <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-2"></i>${cli.endereco || 'Não informado'}</p>
-                        </div>
-                    </div>
-                `;
-                divLista.innerHTML += card;
-            });
+            renderizarClientes(); // Chama a função que desenha a página
 
         } else {
             throw new Error(resultado.erro);
@@ -270,3 +260,84 @@ async function carregarClientes() {
         divLista.innerHTML = '<p class="text-center text-danger small mt-3"><i class="fa-solid fa-triangle-exclamation me-1"></i> Erro ao carregar a lista.</p>';
     }
 }
+
+// Função que corta a lista e mostra apenas os 8 da página atual
+function renderizarClientes() {
+    const divLista = document.getElementById('lista-clientes');
+    divLista.innerHTML = '';
+
+    // Lógica matemática para cortar a lista
+    const inicio = (paginaAtual - 1) * clientesPorPagina;
+    const fim = inicio + clientesPorPagina;
+    const clientesPagina = todosClientes.slice(inicio, fim);
+
+    clientesPagina.forEach(cli => {
+        const card = `
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold mb-0 text-truncate pe-2">${cli.nome}</h6>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">${cli.codigo}</span>
+                    </div>
+                    <p class="text-secondary small mb-1"><i class="fa-brands fa-whatsapp me-2"></i>${cli.telefone || 'Sem telefone'}</p>
+                    <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-2"></i>${cli.endereco || 'Não informado'}</p>
+                </div>
+            </div>
+        `;
+        divLista.innerHTML += card;
+    });
+
+    renderizarBotoesPaginacao();
+}
+
+// Função que desenha os botões (1, 2, 3, Anterior, Próximo)
+function renderizarBotoesPaginacao() {
+    const ulPaginacao = document.getElementById('paginacao-clientes');
+    ulPaginacao.innerHTML = '';
+
+    const totalPaginas = Math.ceil(todosClientes.length / clientesPorPagina);
+
+    // Se tiver 8 ou menos clientes, nem mostra os botões
+    if (totalPaginas <= 1) return;
+
+    // Botão "Anterior"
+    ulPaginacao.innerHTML += `
+        <li class="page-item ${paginaAtual === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="event.preventDefault(); mudarPagina(${paginaAtual - 1})">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+        </li>
+    `;
+
+    // Números das Páginas
+    for (let i = 1; i <= totalPaginas; i++) {
+        ulPaginacao.innerHTML += `
+            <li class="page-item ${paginaAtual === i ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="event.preventDefault(); mudarPagina(${i})">${i}</a>
+            </li>
+        `;
+    }
+
+    // Botão "Próximo"
+    ulPaginacao.innerHTML += `
+        <li class="page-item ${paginaAtual === totalPaginas ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="event.preventDefault(); mudarPagina(${paginaAtual + 1})">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </li>
+    `;
+}
+
+// Função engatilhada quando você clica num botão de página
+window.mudarPagina = function(novaPagina) {
+    const totalPaginas = Math.ceil(todosClientes.length / clientesPorPagina);
+    
+    // Trava de segurança para não ir pra página que não existe
+    if (novaPagina < 1 || novaPagina > totalPaginas) return;
+    
+    paginaAtual = novaPagina;
+    renderizarClientes(); // Atualiza a tela
+    
+    // Opcional: Rola a tela de volta para o topo da lista suavemente
+    document.getElementById('pagina-clientes').scrollIntoView({ behavior: 'smooth' });
+};
