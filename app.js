@@ -213,12 +213,13 @@ toggleModoEscuro.addEventListener('change', function() {
 });
 
 // ==========================================
-// CARREGAR E LISTAR CLIENTES (COM PAGINAÇÃO)
+// CARREGAR, LISTAR E BUSCAR CLIENTES
 // ==========================================
 
-let todosClientes = []; // Vai guardar a lista completa
+let todosClientes = []; // Guarda a base de dados original intacta
+let clientesFiltrados = []; // Guarda apenas os clientes que batem com a pesquisa
 let paginaAtual = 1;
-const clientesPorPagina = 8; // Limite que você escolheu
+const clientesPorPagina = 8; 
 
 async function carregarClientes() {
     const divLista = document.getElementById('lista-clientes');
@@ -230,7 +231,7 @@ async function carregarClientes() {
             <p class="text-secondary small">Carregando clientes...</p>
         </div>
     `;
-    ulPaginacao.innerHTML = ''; // Esconde paginação durante o loading
+    ulPaginacao.innerHTML = ''; 
 
     try {
         const resposta = await fetch(URL_BACKEND, {
@@ -242,16 +243,11 @@ async function carregarClientes() {
         const resultado = await resposta.json();
 
         if (resposta.ok && resultado.status === 'sucesso') {
-            todosClientes = resultado.clientes; // Guarda tudo na memória
-            paginaAtual = 1; // Sempre volta pra página 1 ao recarregar
+            todosClientes = resultado.clientes; 
+            clientesFiltrados = [...todosClientes]; // Inicialmente, a lista filtrada é igual à completa
+            paginaAtual = 1; 
 
-            if (todosClientes.length === 0) {
-                divLista.innerHTML = '<p class="text-center text-secondary small mt-3">Nenhum cliente cadastrado ainda.</p>';
-                return;
-            }
-
-            renderizarClientes(); // Chama a função que desenha a página
-
+            renderizarClientes(); 
         } else {
             throw new Error(resultado.erro);
         }
@@ -261,15 +257,56 @@ async function carregarClientes() {
     }
 }
 
-// Função que corta a lista e mostra apenas os 8 da página atual
+// ==========================================
+// SISTEMA DE BUSCA EM TEMPO REAL
+// ==========================================
+const inputBusca = document.getElementById('buscaCliente');
+
+inputBusca.addEventListener('input', function() {
+    const termoDigitado = this.value.toLowerCase().trim(); // Pega o texto, joga pra minúsculo e tira os espaços em branco
+
+    // Se o campo estiver vazio, volta a mostrar todos
+    if (termoDigitado === '') {
+        clientesFiltrados = [...todosClientes];
+    } else {
+        // Filtra a lista original procurando o termo no Nome, Código ou Telefone
+        clientesFiltrados = todosClientes.filter(cli => {
+            const nome = (cli.nome || '').toLowerCase();
+            const codigo = (cli.codigo || '').toLowerCase();
+            const telefone = (cli.telefone || '').toLowerCase();
+            
+            return nome.includes(termoDigitado) || codigo.includes(termoDigitado) || telefone.includes(termoDigitado);
+        });
+    }
+
+    paginaAtual = 1; // Sempre volta pra primeira página quando faz uma nova busca
+    renderizarClientes(); // Desenha a tela novamente
+});
+
+// ==========================================
+// FUNÇÕES DE DESENHO (RENDER) NA TELA
+// ==========================================
+
 function renderizarClientes() {
     const divLista = document.getElementById('lista-clientes');
     divLista.innerHTML = '';
 
-    // Lógica matemática para cortar a lista
+    // Verifica se a busca não encontrou ninguém
+    if (clientesFiltrados.length === 0) {
+        divLista.innerHTML = `
+            <div class="text-center p-4">
+                <i class="fa-regular fa-face-frown fa-2x text-muted mb-2"></i>
+                <p class="text-secondary small">Nenhum cliente encontrado.</p>
+            </div>
+        `;
+        renderizarBotoesPaginacao(); // Chama para apagar a paginação
+        return;
+    }
+
+    // Matemática da paginação (AGORA USANDO clientesFiltrados)
     const inicio = (paginaAtual - 1) * clientesPorPagina;
     const fim = inicio + clientesPorPagina;
-    const clientesPagina = todosClientes.slice(inicio, fim);
+    const clientesPagina = clientesFiltrados.slice(inicio, fim);
 
     clientesPagina.forEach(cli => {
         const card = `
@@ -290,17 +327,15 @@ function renderizarClientes() {
     renderizarBotoesPaginacao();
 }
 
-// Função que desenha os botões (1, 2, 3, Anterior, Próximo)
 function renderizarBotoesPaginacao() {
     const ulPaginacao = document.getElementById('paginacao-clientes');
     ulPaginacao.innerHTML = '';
 
-    const totalPaginas = Math.ceil(todosClientes.length / clientesPorPagina);
+    // Calcula as páginas baseado na lista FILTRADA
+    const totalPaginas = Math.ceil(clientesFiltrados.length / clientesPorPagina);
 
-    // Se tiver 8 ou menos clientes, nem mostra os botões
     if (totalPaginas <= 1) return;
 
-    // Botão "Anterior"
     ulPaginacao.innerHTML += `
         <li class="page-item ${paginaAtual === 1 ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="event.preventDefault(); mudarPagina(${paginaAtual - 1})">
@@ -309,7 +344,6 @@ function renderizarBotoesPaginacao() {
         </li>
     `;
 
-    // Números das Páginas
     for (let i = 1; i <= totalPaginas; i++) {
         ulPaginacao.innerHTML += `
             <li class="page-item ${paginaAtual === i ? 'active' : ''}">
@@ -318,7 +352,6 @@ function renderizarBotoesPaginacao() {
         `;
     }
 
-    // Botão "Próximo"
     ulPaginacao.innerHTML += `
         <li class="page-item ${paginaAtual === totalPaginas ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="event.preventDefault(); mudarPagina(${paginaAtual + 1})">
@@ -328,16 +361,11 @@ function renderizarBotoesPaginacao() {
     `;
 }
 
-// Função engatilhada quando você clica num botão de página
 window.mudarPagina = function(novaPagina) {
-    const totalPaginas = Math.ceil(todosClientes.length / clientesPorPagina);
-    
-    // Trava de segurança para não ir pra página que não existe
+    const totalPaginas = Math.ceil(clientesFiltrados.length / clientesPorPagina);
     if (novaPagina < 1 || novaPagina > totalPaginas) return;
     
     paginaAtual = novaPagina;
-    renderizarClientes(); // Atualiza a tela
-    
-    // Opcional: Rola a tela de volta para o topo da lista suavemente
+    renderizarClientes(); 
     document.getElementById('pagina-clientes').scrollIntoView({ behavior: 'smooth' });
 };
